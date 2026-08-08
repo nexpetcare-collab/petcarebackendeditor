@@ -4,13 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Save, Search, Share2, BarChart, ArrowRightLeft, Plus, Trash2, Image as ImageIcon, Star, Loader2, CheckCircle2 } from "lucide-react";
-import { saveWebsiteSettingsAction } from "@/actions/tenant";
+import { saveWebsiteContentAction, saveWebsiteSettingsAction } from "@/actions/tenant";
+import { useEditorStore } from "@/store/useEditorStore";
 
 export default function ClientSettings({ slug, initialData }: { slug: string, initialData: any }) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-
+  const config = useEditorStore((state) => state.config); // Grab current JSON from Zustand
   const [settings, setSettings] = useState({
     seoTitle: initialData?.settings?.seoTitle || "",
     seoDescription: initialData?.settings?.seoDescription || "",
@@ -33,7 +34,21 @@ export default function ClientSettings({ slug, initialData }: { slug: string, in
       redirects: [...prev.redirects, { oldPath: "", newPath: "" }]
     }));
   };
+  const handleEditorSave = async () => {
+    setIsSaving(true);
 
+    // 1. Send the updated JSON to our Server Action
+    const res = await saveWebsiteContentAction(slug, config);
+
+    if (res.success) {
+      // 2. Cache is instantly cleared!
+      alert("Saved & Live Instantly!");
+    } else {
+      alert("Failed to save: " + res.error);
+    }
+
+    setIsSaving(false);
+  };
   const updateRedirect = (index: number, field: string, value: string) => {
     const newRedirects = [...settings.redirects];
     newRedirects[index][field] = value;
@@ -49,7 +64,7 @@ export default function ClientSettings({ slug, initialData }: { slug: string, in
     setIsSaving(true);
     const res = await saveWebsiteSettingsAction(slug, settings);
     setIsSaving(false);
-    
+
     if (res.success) {
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
@@ -61,7 +76,7 @@ export default function ClientSettings({ slug, initialData }: { slug: string, in
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] pb-32 font-sans">
-      
+
       {/* Top Navigation Bar */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -74,20 +89,20 @@ export default function ClientSettings({ slug, initialData }: { slug: string, in
               <p className="text-xs text-gray-500 hidden md:block">Settings apply to all templates on {slug}.nexpetcare.online</p>
             </div>
           </div>
-          
-          <button 
-            onClick={handleSave}
+
+          <button
+            onClick={handleEditorSave}
             disabled={isSaving}
-            className="flex items-center gap-2 bg-black text-white px-5 py-2 rounded-lg font-semibold hover:bg-gray-800 transition-all shadow-md disabled:opacity-70"
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition"
           >
-            {isSaving ? <Loader2 size={16} className="animate-spin" /> : (saved ? <CheckCircle2 size={16} className="text-green-400" /> : <Save size={16} />)}
-            {isSaving ? "Saving..." : (saved ? "Saved!" : "Save Settings")}
+            {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+            {isSaving ? "Saving..." : "Save Changes"}
           </button>
         </div>
       </div>
 
       <div className="max-w-4xl mx-auto p-6 mt-6 space-y-8">
-        
+
         {/* 1. Google Search & SEO */}
         <section className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm space-y-6">
           <div className="flex items-center gap-3 text-blue-600 mb-2 border-b border-gray-100 pb-4">
@@ -98,11 +113,11 @@ export default function ClientSettings({ slug, initialData }: { slug: string, in
           <div className="space-y-5">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Meta Title (Heading on Google)</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={settings.seoTitle}
                 onChange={e => handleChange("seoTitle", e.target.value)}
-                placeholder="e.g., Fluffy's Salon | Best Dog Grooming in Toronto" 
+                placeholder="e.g., Fluffy's Salon | Best Dog Grooming in Toronto"
                 className="w-full border border-gray-300 rounded-lg px-4 py-2.5 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
               />
               <p className="text-xs text-gray-500 mt-1">Recommended: 50-60 characters.</p>
@@ -110,22 +125,22 @@ export default function ClientSettings({ slug, initialData }: { slug: string, in
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Meta Description (Subheading on Google)</label>
-              <textarea 
+              <textarea
                 value={settings.seoDescription}
                 onChange={e => handleChange("seoDescription", e.target.value)}
                 rows={3}
-                placeholder="e.g., Book your dog's teeth cleaning today. Stress-free, anesthesia-free, and affordable..." 
+                placeholder="e.g., Book your dog's teeth cleaning today. Stress-free, anesthesia-free, and affordable..."
                 className="w-full border border-gray-300 rounded-lg px-4 py-2.5 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
               />
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Keywords</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={settings.keywords}
                 onChange={e => handleChange("keywords", e.target.value)}
-                placeholder="e.g., dog grooming, pet care, teeth cleaning near me" 
+                placeholder="e.g., dog grooming, pet care, teeth cleaning near me"
                 className="w-full border border-gray-300 rounded-lg px-4 py-2.5 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
               />
             </div>
@@ -146,13 +161,13 @@ export default function ClientSettings({ slug, initialData }: { slug: string, in
                 {settings.favicon ? (
                   <img src={settings.favicon} alt="Favicon" className="w-10 h-10 rounded-lg border border-gray-200 object-cover shadow-sm shrink-0" />
                 ) : (
-                  <div className="w-10 h-10 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center text-gray-400 shrink-0"><ImageIcon size={16}/></div>
+                  <div className="w-10 h-10 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center text-gray-400 shrink-0"><ImageIcon size={16} /></div>
                 )}
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={settings.favicon}
                   onChange={e => handleChange("favicon", e.target.value)}
-                  placeholder="https://... (PNG or ICO)" 
+                  placeholder="https://... (PNG or ICO)"
                   className="w-full border border-gray-300 rounded-lg px-4 py-2.5 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                 />
               </div>
@@ -164,13 +179,13 @@ export default function ClientSettings({ slug, initialData }: { slug: string, in
                 {settings.ogImage ? (
                   <img src={settings.ogImage} alt="Social" className="w-16 h-10 object-cover rounded-lg border border-gray-200 shadow-sm shrink-0" />
                 ) : (
-                  <div className="w-16 h-10 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center text-gray-400 shrink-0"><ImageIcon size={16}/></div>
+                  <div className="w-16 h-10 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center text-gray-400 shrink-0"><ImageIcon size={16} /></div>
                 )}
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={settings.ogImage}
                   onChange={e => handleChange("ogImage", e.target.value)}
-                  placeholder="Image URL for social previews" 
+                  placeholder="Image URL for social previews"
                   className="w-full border border-gray-300 rounded-lg px-4 py-2.5 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                 />
               </div>
@@ -188,24 +203,24 @@ export default function ClientSettings({ slug, initialData }: { slug: string, in
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Google Analytics ID</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={settings.googleAnalyticsId}
                 onChange={e => handleChange("googleAnalyticsId", e.target.value)}
-                placeholder="G-XXXXXXXXXX" 
+                placeholder="G-XXXXXXXXXX"
                 className="w-full border border-gray-300 rounded-lg px-4 py-2.5 outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all"
               />
             </div>
 
             <div>
               <label className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 mb-2">
-                Google Reviews Widget ID <Star size={14} className="text-yellow-500" /> 
+                Google Reviews Widget ID <Star size={14} className="text-yellow-500" />
               </label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={settings.googleReviewsId}
                 onChange={e => handleChange("googleReviewsId", e.target.value)}
-                placeholder="e.g. Elfsight App ID" 
+                placeholder="e.g. Elfsight App ID"
                 className="w-full border border-gray-300 rounded-lg px-4 py-2.5 outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all"
               />
             </div>
@@ -219,14 +234,14 @@ export default function ClientSettings({ slug, initialData }: { slug: string, in
               <div className="p-2 bg-red-50 rounded-lg"><ArrowRightLeft size={20} /></div>
               <h3 className="text-lg font-bold text-gray-900">301 Redirect Mapping (Protect SEO)</h3>
             </div>
-            <button 
+            <button
               onClick={addRedirect}
               className="flex items-center gap-2 text-sm bg-red-50 text-red-700 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors font-semibold"
             >
               <Plus size={16} /> Add Redirect
             </button>
           </div>
-          
+
           <p className="text-sm text-gray-600">
             Moving from Wix or WordPress? Map your old URLs here so Google knows where your pages moved. This protects your keyword rankings and prevents 404 errors.
           </p>
@@ -241,26 +256,26 @@ export default function ClientSettings({ slug, initialData }: { slug: string, in
                 <div key={index} className="flex flex-col md:flex-row items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200">
                   <div className="flex-1 w-full">
                     <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">Old Path (Wix/WP)</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={redirect.oldPath}
                       onChange={e => updateRedirect(index, "oldPath", e.target.value)}
-                      placeholder="/old-services-page" 
+                      placeholder="/old-services-page"
                       className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm"
                     />
                   </div>
                   <ArrowRightLeft size={16} className="text-gray-400 mt-5 hidden md:block shrink-0" />
                   <div className="flex-1 w-full">
                     <label className="text-[10px] uppercase font-bold text-gray-500 block mb-1">New Path (NexPet)</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={redirect.newPath}
                       onChange={e => updateRedirect(index, "newPath", e.target.value)}
-                      placeholder="/services" 
+                      placeholder="/services"
                       className="w-full bg-white border border-gray-300 rounded-md px-3 py-2 outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 text-sm"
                     />
                   </div>
-                  <button 
+                  <button
                     onClick={() => removeRedirect(index)}
                     className="md:mt-5 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
                     title="Remove Redirect"

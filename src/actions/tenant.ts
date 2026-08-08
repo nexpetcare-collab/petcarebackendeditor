@@ -145,3 +145,32 @@ export async function saveWebsiteSettingsAction(slug: string, settings: any) {
     return { success: false, error: error.message };
   }
 }
+
+
+// Add this to actions/tenant.ts
+
+export async function saveWebsiteContentAction(slug: string, websiteOneData: any) {
+  try {
+    const websiteRef = doc(db, "websites", slug);
+    
+    // Save the new editor layout to Firebase
+    await updateDoc(websiteRef, {
+      websiteOneData,
+      lastUpdated: new Date().toISOString()
+    });
+
+    // 🚀 INSTANTLY PURGE THE NEXT.JS CACHE FOR THIS URL
+    // @ts-ignore
+    revalidateTag(`website-${slug}`);
+    // @ts-ignore
+    revalidateTag("website");
+    
+    // Force the subdomain route to rebuild
+    revalidatePath(`/${slug}`);
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Save Content Error:", error);
+    return { success: false, error: error.message };
+  }
+}
