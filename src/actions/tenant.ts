@@ -153,20 +153,14 @@ export async function saveWebsiteContentAction(slug: string, websiteOneData: any
   try {
     const websiteRef = doc(db, "websites", slug);
     
-    // Save the new editor layout to Firebase
     await updateDoc(websiteRef, {
       websiteOneData,
       lastUpdated: new Date().toISOString()
     });
 
-    // 🚀 INSTANTLY PURGE THE NEXT.JS CACHE FOR THIS URL
-    // @ts-ignore
-    revalidateTag(`website-${slug}`);
-    // @ts-ignore
-    revalidateTag("website");
-    
-    // Force the subdomain route to rebuild
-    revalidatePath(`/${slug}`);
+    // 🔥 Bulletproof path clearing
+    revalidatePath(`/${slug}`, 'page');
+    revalidatePath(`/dashboard/${slug}`, 'layout');
 
     return { success: true };
   } catch (error: any) {
