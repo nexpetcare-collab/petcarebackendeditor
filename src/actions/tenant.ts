@@ -152,19 +152,23 @@ export async function saveWebsiteSettingsAction(slug: string, settings: any) {
 export async function saveWebsiteContentAction(slug: string, websiteOneData: any) {
   try {
     const websiteRef = doc(db, "websites", slug);
-    
     await updateDoc(websiteRef, {
       websiteOneData,
       lastUpdated: new Date().toISOString()
     });
 
-    // 🔥 Bulletproof path clearing
+    // 🚀 1. Destroy the Infinite Data Cache
+    // @ts-ignore
+    revalidateTag(`website-${slug}`);
+
+    // 🚀 2. Command Vercel to destroy the cached Subdomain HTML page
     revalidatePath(`/${slug}`, 'page');
-    revalidatePath(`/dashboard/${slug}`, 'layout');
+    
+    // 🚀 3. Command Vercel to destroy the cached Custom Domain HTML page (if they have one)
+    revalidatePath(`/live/domain/[domain]`, 'page');
 
     return { success: true };
   } catch (error: any) {
-    console.error("Save Content Error:", error);
     return { success: false, error: error.message };
   }
 }

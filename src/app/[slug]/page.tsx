@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getWebsiteData } from "@/lib/get-website";
 import WebsiteOne from "@/components/templates/WebsiteOne";
 
-export const revalidate = 3600; 
+// ❌ REMOVED: export const revalidate = 3600; 
 
 // 🔥 THIS MAGICALLY INJECTS SEO SETTINGS INTO THE <head>
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -43,7 +43,7 @@ export default async function LiveTenantPage({ params }: { params: Promise<{ slu
         <script async src={`https://www.googletagmanager.com/gtag/js?id=${data.settings.googleAnalyticsId}`}></script>
       )}
       
-      {/* ⭐ Inject Google Reviews Widget Script (assuming Elfsight or similar) */}
+      {/* ⭐ Inject Google Reviews Widget Script */}
       {data.settings?.googleReviewsId && (
          <script src="https://apps.elfsight.com/p/platform.js" defer></script>
       )}
