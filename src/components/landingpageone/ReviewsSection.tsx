@@ -7,9 +7,9 @@ const FiveStars = ({ color }: { color?: string }) => (
             <Star
                 key={i}
                 className="w-[18px] h-[18px]"
-                style={{ 
-                    color: color || '#8c863a', 
-                    fill: color || '#8c863a' 
+                style={{
+                    color: color || '#8c863a',
+                    fill: color || '#8c863a'
                 }}
             />
         ))}
@@ -30,11 +30,11 @@ const CardRenderer = ({ card }: { card: any }) => {
     // 1. STAT NUMERIC CARD (e.g., 4.96/5)
     if (card.type === 'stat-numeric') {
         return (
-            <div 
+            <div
                 className="rounded-2xl p-8 flex flex-col items-center justify-center text-center min-h-[280px] shadow-sm"
                 style={{ backgroundColor: card.bg || '#a35c38' }}
             >
-                <h3 
+                <h3
                     className="font-medium text-[48px] tracking-[-1px] mb-4"
                     style={{ color: card.scoreColor || '#ffffff' }}
                 >
@@ -42,7 +42,7 @@ const CardRenderer = ({ card }: { card: any }) => {
                     <span className="text-[36px] ml-0.5">{card.scale || '/5'}</span>
                 </h3>
                 <FiveStars color={card.starColor || '#ffffff'} />
-                <p 
+                <p
                     className="text-[14px] mt-3 opacity-90 font-medium"
                     style={{ color: card.textColor || '#ffffff' }}
                 >
@@ -55,7 +55,7 @@ const CardRenderer = ({ card }: { card: any }) => {
     // 2. STAT IMAGE CARD (e.g., 1200+ Happy Pets)
     if (card.type === 'stat-image') {
         return (
-            <div 
+            <div
                 className="relative rounded-2xl overflow-hidden min-h-[280px] group shadow-sm"
                 style={{ backgroundColor: card.bg || '#111111' }}
             >
@@ -67,18 +67,18 @@ const CardRenderer = ({ card }: { card: any }) => {
                     />
                 )}
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 z-10">
-                    <Smile 
-                        className="w-12 h-12 mb-4" 
-                        strokeWidth={1.5} 
-                        style={{ color: card.iconColor || '#ffffff' }} 
+                    <Smile
+                        className="w-12 h-12 mb-4"
+                        strokeWidth={1.5}
+                        style={{ color: card.iconColor || '#ffffff' }}
                     />
-                    <h3 
+                    <h3
                         className="font-medium text-[40px] tracking-tight mb-1"
                         style={{ color: card.textColor || '#ffffff' }}
                     >
                         {card.heading || '1200+'}
                     </h3>
-                    <p 
+                    <p
                         className="text-[16px] font-medium"
                         style={{ color: card.textColor || '#ffffff' }}
                     >
@@ -91,16 +91,16 @@ const CardRenderer = ({ card }: { card: any }) => {
 
     // 3. REVIEW CARD (Default)
     return (
-        <div 
+        <div
             className="border rounded-2xl p-8 flex flex-col justify-between min-h-[280px] h-full shadow-sm"
-            style={{ 
+            style={{
                 backgroundColor: card.bg || '#faf3ec',
                 borderColor: card.borderColor || '#ece5de'
             }}
         >
             <div>
                 <FiveStars color={card.starColor || '#8c863a'} />
-                <p 
+                <p
                     className="text-[16px] leading-[1.6] mt-6"
                     style={{ color: card.textColor || '#625b5b' }}
                 >
@@ -110,21 +110,21 @@ const CardRenderer = ({ card }: { card: any }) => {
             <div className="flex items-center gap-4 mt-8">
                 {card.avatar && (
                     <div className="relative w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 bg-white border border-gray-100">
-                        <img 
-                            src={card.avatar} 
-                            alt={card.name || 'Avatar'} 
-                            className="absolute inset-0 w-full h-full object-cover" 
+                        <img
+                            src={card.avatar}
+                            alt={card.name || 'Avatar'}
+                            className="absolute inset-0 w-full h-full object-cover"
                         />
                     </div>
                 )}
                 <div>
-                    <h4 
+                    <h4
                         className="font-medium text-[16px]"
                         style={{ color: card.titleColor || '#1e0c05' }}
                     >
                         {card.name || 'Anonymous Client'}
                     </h4>
-                    <p 
+                    <p
                         className="text-[14px]"
                         style={{ color: card.textColor || '#625b5b' }}
                     >
@@ -158,8 +158,8 @@ export default function ReviewsSection({ data }: { data?: any }) {
     const columns = [col1, col2, col3];
 
     return (
-        <section 
-        id='#reviews'
+        <section
+            id='reviews'
             className="py-20 w-full overflow-hidden"
             style={{ backgroundColor: data.bg || '#fffaf8' }}
         >
@@ -167,13 +167,13 @@ export default function ReviewsSection({ data }: { data?: any }) {
 
                 {/* Header Section */}
                 <div className="flex flex-col items-center text-center max-w-[614px] mb-12 lg:mb-16">
-                    <h2 
+                    <h2
                         className="font-medium text-4xl md:text-[48px] leading-[1.2] tracking-[-1.5px] mb-4"
                         style={{ color: data.headingColor || '#1e0c05' }}
                     >
                         {heading}
                     </h2>
-                    <p 
+                    <p
                         className="text-base md:text-[18px] leading-[1.6]"
                         style={{ color: data.descColor || '#625b5b' }}
                     >

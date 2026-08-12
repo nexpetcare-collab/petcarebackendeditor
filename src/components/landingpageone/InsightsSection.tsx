@@ -6,20 +6,20 @@ export default function InsightsSection({ data }: { data: any }) {
     const insights = data.items || [];
 
     return (
-        <section 
-        id='#insights'
-            className="py-20 w-full overflow-hidden" 
+        <section
+            id='insights'
+            className="py-20 w-full overflow-hidden"
             style={{ backgroundColor: data.bg }}
         >
             <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col items-center">
                 <div className="flex flex-col items-center text-center mb-12 lg:mb-16">
-                    <h2 
+                    <h2
                         className="font-medium text-4xl md:text-[48px] leading-[1.2] tracking-[-1.5px] mb-4"
                         style={{ color: data.headingColor }}
                     >
                         {data.heading}
                     </h2>
-                    <p 
+                    <p
                         className="text-base md:text-[18px] leading-[1.6]"
                         style={{ color: data.descColor }}
                     >
@@ -30,32 +30,32 @@ export default function InsightsSection({ data }: { data: any }) {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-8 w-full">
                     {insights.map((insight: any, index: number) => (
                         <div key={insight.id || index} className="w-full">
-                            <article 
+                            <article
                                 className="flex flex-col group cursor-pointer rounded-2xl overflow-hidden"
                                 style={{ backgroundColor: data.cardBg || 'transparent' }}
                             >
                                 <div className="relative w-full aspect-[408/252] rounded-2xl overflow-hidden mb-6 shadow-sm border border-gray-100">
                                     {insight.image && (
-                                        <img 
-                                            src={insight.image} 
-                                            alt={insight.title || "Blog Post"} 
-                                            className="object-cover w-full h-full transition-transform duration-500 ease-out group-hover:scale-105" 
+                                        <img
+                                            src={insight.image}
+                                            alt={insight.title || "Blog Post"}
+                                            className="object-cover w-full h-full transition-transform duration-500 ease-out group-hover:scale-105"
                                         />
                                     )}
                                 </div>
                                 <div className="flex flex-col items-start px-1">
-                                    <div 
+                                    <div
                                         className="inline-flex items-center justify-center border border-gray-200 rounded-lg px-3 py-1 mb-4"
                                         style={{ backgroundColor: data.cardDateBg }}
                                     >
-                                        <span 
+                                        <span
                                             className="font-medium text-[14px] leading-[1.6]"
                                             style={{ color: data.cardDateText }}
                                         >
                                             {insight.date}
                                         </span>
                                     </div>
-                                    <h3 
+                                    <h3
                                         className="font-medium text-[22px] md:text-[24px] leading-[1.3] tracking-[-0.7px] transition-colors duration-300 hover:opacity-80"
                                         style={{ color: data.cardTitle }}
                                     >

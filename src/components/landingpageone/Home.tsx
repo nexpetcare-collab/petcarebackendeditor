@@ -11,7 +11,7 @@ export default function HeroSection({ data }: { data: any }) {
 
     return (
         <section
-            id='#home'
+            id='home'
             className="relative w-full lg:min-h-[115vh] h-screen flex md:items-center items-end overflow-hidden"
             style={{ backgroundColor: data.bg }}
         >

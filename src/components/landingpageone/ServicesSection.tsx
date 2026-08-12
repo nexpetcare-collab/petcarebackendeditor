@@ -41,20 +41,20 @@ export default function ServicesSection({ data }: { data: any }) {
     };
 
     return (
-        <section 
-        id='#services'
+        <section
+            id='services'
             className="py-20 w-full overflow-hidden"
             style={{ backgroundColor: data.bg }}
         >
             <div className="max-w-7xl mx-auto px-6 flex flex-col items-center">
 
                 <div className="flex flex-col items-center text-center max-w-[560px] mb-12 lg:mb-[72px]">
-                    <h2 
+                    <h2
                         className="font-medium text-4xl md:text-[48px] leading-[1.2] tracking-[-1.5px] mb-4"
                         style={{ color: data.headingColor }}
                         dangerouslySetInnerHTML={{ __html: data.heading || "" }}
                     />
-                    <p 
+                    <p
                         className="text-base md:text-[18px] leading-[1.6]"
                         style={{ color: data.descColor }}
                         dangerouslySetInnerHTML={{ __html: data.description || "" }}
@@ -67,26 +67,26 @@ export default function ServicesSection({ data }: { data: any }) {
 
                         return (
                             <div key={index} className="h-full">
-                                <div 
+                                <div
                                     className="group flex flex-col h-full border rounded-2xl p-7 transition-all duration-300 hover:shadow-md hover:-translate-y-1"
                                     style={{ backgroundColor: data.cardBg, borderColor: data.cardBorder }}
                                 >
                                     <div className="mb-[37px]">
-                                        <Icon 
-                                            className="w-11 h-11 stroke-[1.5]" 
-                                            style={{ color: data.iconColor }} 
+                                        <Icon
+                                            className="w-11 h-11 stroke-[1.5]"
+                                            style={{ color: data.iconColor }}
                                         />
                                     </div>
 
                                     <div className="flex flex-col flex-grow justify-between gap-[30px]">
                                         <div>
-                                            <h3 
+                                            <h3
                                                 className="font-medium text-[20px] leading-[1.2] tracking-[-0.5px] mb-[10px]"
                                                 style={{ color: data.titleColor }}
                                             >
                                                 {service.title || "Pet Service"}
                                             </h3>
-                                            <p 
+                                            <p
                                                 className="text-[14px] leading-[1.48]"
                                                 style={{ color: data.descColor }}
                                             >
@@ -95,7 +95,7 @@ export default function ServicesSection({ data }: { data: any }) {
                                         </div>
 
                                         {service.priceLabel && (
-                                            <div 
+                                            <div
                                                 className="font-semibold text-sm mb-2"
                                                 style={{ color: data.priceColor }}
                                             >
@@ -103,8 +103,8 @@ export default function ServicesSection({ data }: { data: any }) {
                                             </div>
                                         )}
 
-                                        <a 
-                                            href="#" 
+                                        <a
+                                            href="#"
                                             className="inline-flex items-center gap-2 font-medium text-[16px] transition-colors mt-auto opacity-90 hover:opacity-100"
                                             style={{ color: data.titleColor }}
                                         >
@@ -120,8 +120,8 @@ export default function ServicesSection({ data }: { data: any }) {
 
                 {data.cta && (
                     <div>
-                        <a 
-                            href={data.cta.href || "#"} 
+                        <a
+                            href={data.cta.href || "#"}
                             className="group relative rounded-2xl py-3.5 px-6 flex items-center justify-center gap-2.5 w-fit overflow-hidden transition-all duration-300 shadow-sm hover:opacity-90"
                             style={{ backgroundColor: data.cta.bg, color: data.cta.text }}
                         >

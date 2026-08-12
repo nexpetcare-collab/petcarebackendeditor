@@ -5,8 +5,8 @@ export default function GallerySection({ data }: { data: any }) {
     if (!data || !data.items) return null;
 
     return (
-        <section 
-        id='#gallery'
+        <section
+            id='gallery'
             className="py-20 w-full overflow-hidden"
             style={{ backgroundColor: data.bg || '#fffaf8' }}
         >
@@ -14,13 +14,13 @@ export default function GallerySection({ data }: { data: any }) {
 
                 {/* Header Block */}
                 <div className="flex flex-col items-center text-center max-w-[628px] mb-16 lg:mb-[94px]">
-                    <h2 
+                    <h2
                         className="font-medium text-4xl md:text-[48px] leading-[1.2] tracking-[-1.5px] mb-4"
                         style={{ color: data.headingColor }}
                     >
                         {data.heading}
                     </h2>
-                    <p 
+                    <p
                         className="text-base md:text-[18px] leading-[1.6] max-w-[537px]"
                         style={{ color: data.descColor }}
                     >
@@ -37,11 +37,11 @@ export default function GallerySection({ data }: { data: any }) {
                             <div className="absolute left-[100px] right-0 h-px bg-gray-200 top-1/2 -translate-y-1/2 z-0" />
 
                             {/* Sticky label stays visible while scrolling */}
-                            <div 
+                            <div
                                 className="w-[120px] flex-shrink-0 z-20 sticky left-0 py-2"
                                 style={{ backgroundColor: data.bg || '#fffaf8' }} // Matches section bg to hide scroll behind it
                             >
-                                <div 
+                                <div
                                     className="border border-gray-200 rounded-xl px-4 py-2 text-center font-semibold text-[16px] inline-block shadow-sm"
                                     style={{ backgroundColor: data.badgeBg, color: data.badgeText }}
                                 >
@@ -53,7 +53,7 @@ export default function GallerySection({ data }: { data: any }) {
                             <div className="flex flex-nowrap gap-8 z-10 pl-8">
                                 {data.items.map((item: any, index: number) => (
                                     <div key={`before-${item.id || index}`} className="w-[280px] md:w-[320px] shrink-0">
-                                        <div 
+                                        <div
                                             className="relative aspect-square rounded-2xl overflow-hidden shadow-sm border border-gray-200"
                                             style={{ backgroundColor: data.badgeBg }}
                                         >
@@ -72,16 +72,16 @@ export default function GallerySection({ data }: { data: any }) {
 
                         {/* ROW 2: ARROWS */}
                         <div className="flex w-full py-8">
-                            <div 
+                            <div
                                 className="w-[120px] flex-shrink-0 sticky left-0"
                                 style={{ backgroundColor: data.bg || '#fffaf8' }}
                             />
                             <div className="flex flex-nowrap gap-8 pl-8">
                                 {data.items.map((item: any, index: number) => (
                                     <div key={`arrow-${item.id || index}`} className="w-[280px] md:w-[320px] shrink-0 flex justify-center items-center">
-                                        <ArrowDown 
-                                            className="w-5 h-5 stroke-[2]" 
-                                            style={{ color: data.arrowColor }} 
+                                        <ArrowDown
+                                            className="w-5 h-5 stroke-[2]"
+                                            style={{ color: data.arrowColor }}
                                         />
                                     </div>
                                 ))}
@@ -93,11 +93,11 @@ export default function GallerySection({ data }: { data: any }) {
                             <div className="absolute left-[100px] right-0 h-px bg-gray-200 top-1/2 -translate-y-1/2 z-0" />
 
                             {/* Sticky label */}
-                            <div 
+                            <div
                                 className="w-[120px] flex-shrink-0 z-20 sticky left-0 py-2"
                                 style={{ backgroundColor: data.bg || '#fffaf8' }}
                             >
-                                <div 
+                                <div
                                     className="border border-gray-200 rounded-xl px-4 py-2 text-center font-semibold text-[16px] inline-block shadow-sm"
                                     style={{ backgroundColor: data.badgeBg, color: data.badgeText }}
                                 >
@@ -109,7 +109,7 @@ export default function GallerySection({ data }: { data: any }) {
                             <div className="flex flex-nowrap gap-8 z-10 pl-8">
                                 {data.items.map((item: any, index: number) => (
                                     <div key={`after-${item.id || index}`} className="w-[280px] md:w-[320px] shrink-0">
-                                        <div 
+                                        <div
                                             className="relative aspect-square rounded-2xl overflow-hidden shadow-sm border border-gray-200"
                                             style={{ backgroundColor: data.badgeBg }}
                                         >
