@@ -1,34 +1,83 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useInView } from "react-intersection-observer";
-import { Home, Briefcase, Calendar, Dog, User } from "lucide-react";
+import { 
+  Home, 
+  Briefcase, 
+  Calendar, 
+  Dog, 
+  User, 
+  Image as GalleryIcon, 
+  Star, 
+  MessageSquare,
+  Sparkles
+} from "lucide-react";
 import PawIcon from "@/icons/icon1"; 
 import { cn } from "@/lib/utils";
+
+// 🚀 Dynamic Icon Lookup Map
+const ICON_MAP: Record<string, any> = {
+  Home: Home,
+  Calendar: Calendar,
+  Gallery: GalleryIcon,
+  Image: GalleryIcon,
+  Briefcase: Briefcase,
+  Dog: Dog,
+  User: User,
+  Reviews: Star,
+  Star: Star,
+  MessageSquare: MessageSquare,
+  Sparkles: Sparkles,
+};
 
 export default function Navbar({ data }: { data: any }) {
   const pathname = usePathname();
   const { ref, inView } = useInView({ threshold: 0, initialInView: true });
   const isScrolled = !inView;
 
+  // 🚀 Track URL Hash for `#gallery`, `#services`, `#reviews`, etc.
+  const [activeHash, setActiveHash] = useState("");
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      setActiveHash(window.location.hash || "/");
+    };
+
+    handleHashChange(); // Set state on load
+    window.addEventListener("hashchange", handleHashChange);
+    window.addEventListener("popstate", handleHashChange);
+
+    return () => {
+      window.removeEventListener("hashchange", handleHashChange);
+      window.removeEventListener("popstate", handleHashChange);
+    };
+  }, []);
+
   if (!data) return null;
 
   const logo = data.logo || { src: "", alt: "Logo" };
   const links = data.links || [];
 
+  const getIcon = (iconName?: string, fallbackIndex: number = 0) => {
+    if (!iconName) {
+      const fallbacks = [Home, GalleryIcon, Briefcase, Dog, Star];
+      return fallbacks[fallbackIndex % fallbacks.length];
+    }
+    const cleanName = iconName.trim();
+    return ICON_MAP[cleanName] || ICON_MAP[cleanName.charAt(0).toUpperCase() + cleanName.slice(1)] || Star;
+  };
+
   return (
     <>
-      {/* 
-        🚀 FIX: Removed 'hidden' (which caused instant trigger) 
-        and changed height to 'h-screen' so it only triggers after 1 full screen of scrolling.
-      */}
       <div ref={ref} className="absolute top-0 left-0 w-full h-screen pointer-events-none -z-10 bg-transparent" />
 
       {/* DESKTOP TOP NAVIGATION */}
       <nav 
         className="hidden md:block fixed top-0 left-0 w-full z-50 transition-all duration-300"
         style={{ 
-          backgroundColor: isScrolled ? `${data.bg}E6` : 'transparent', // E6 adds 90% opacity hex
+          backgroundColor: isScrolled ? `${data.bg}E6` : 'transparent',
           backdropFilter: isScrolled ? 'blur(16px)' : 'none',
           '--nav-link': data.linkColor || '#625b5b',
           '--nav-hover': data.linkHoverColor || '#1e0c05'
@@ -56,11 +105,16 @@ export default function Navbar({ data }: { data: any }) {
           >
             {links.length > 0 ? (
               links.map((link: any, index: number) => {
-                const isActive = pathname === link.href;
+                const cleanHref = (link.href || "").trim();
+                const isActive = cleanHref === "/" || cleanHref === ""
+                  ? (pathname === "/" && (!activeHash || activeHash === "#" || activeHash === "/"))
+                  : activeHash === cleanHref;
+
                 return (
                   <a
                     key={index}
-                    href={link.href}
+                    href={cleanHref}
+                    onClick={() => setActiveHash(cleanHref)}
                     className={cn(
                       "px-4 py-1.5 rounded-full text-sm transition-all duration-200"
                     )}
@@ -116,29 +170,43 @@ export default function Navbar({ data }: { data: any }) {
 
       {/* MOBILE BOTTOM NAVIGATION */}
       <nav 
-        className="md:hidden fixed inset-x-0 bottom-4 mx-auto z-50 w-fit border rounded-full flex items-center p-2 shadow-xl space-x-1"
+        className="md:hidden fixed inset-x-0 bottom-4 mx-auto z-50 w-fit max-w-[95vw] border rounded-full flex items-center p-1.5 shadow-xl space-x-1"
         style={{ backgroundColor: data.bg, borderColor: data.linkHoverColor + '20' }}
       >
-        {links.slice(0, 4).map((link: any, index: number) => {
-          // Fallback icons for mobile nav if dynamic mapping is needed
-          const icons = [Home, Briefcase, Calendar, Dog];
-          const Icon = icons[index % icons.length];
-          const isActive = pathname === link.href;
-          
+        {links.slice(0, 5).map((link: any, index: number) => {
+          const cleanHref = (link.href || "").trim();
+          const Icon = getIcon(link.icon, index);
+
+          // Checks active status against Hash or Pathname
+          const isActive = cleanHref === "/" || cleanHref === ""
+            ? (pathname === "/" && (!activeHash || activeHash === "#" || activeHash === "/"))
+            : activeHash === cleanHref;
+
           return (
             <a 
               key={index} 
-              href={link.href} 
-              className={cn("flex items-center gap-0 px-3 py-2 rounded-full transition-colors duration-200 relative h-10 min-w-[44px]", isActive ? "gap-2" : "")}
+              href={cleanHref} 
+              onClick={() => setActiveHash(cleanHref)}
+              className={cn(
+                "flex items-center gap-0 px-3 py-2 rounded-full transition-all duration-300 relative h-10 min-w-[44px]", 
+                isActive ? "gap-2 px-3.5" : ""
+              )}
               style={{
                 backgroundColor: isActive ? `${data.linkHoverColor}10` : 'transparent',
                 color: isActive ? data.linkHoverColor : data.linkColor
               }}
             >
-              <Icon size={22} strokeWidth={2} className="flex-shrink-0" />
-              <div className="overflow-hidden flex items-center transition-all duration-300" style={{ width: isActive ? "68px" : "0px", opacity: isActive ? 1 : 0, marginLeft: isActive ? "4px" : "0px" }}>
-                <span className="font-medium text-xs whitespace-nowrap overflow-hidden text-ellipsis leading-relaxed">
-                  {link.label}
+              <Icon size={20} strokeWidth={2} className="flex-shrink-0" />
+              <div 
+                className="overflow-hidden flex items-center transition-all duration-300 ease-in-out" 
+                style={{ 
+                  width: isActive ? "64px" : "0px", 
+                  opacity: isActive ? 1 : 0, 
+                  marginLeft: isActive ? "4px" : "0px" 
+                }}
+              >
+                <span className="font-medium text-xs capitalize whitespace-nowrap overflow-hidden text-ellipsis leading-relaxed">
+                  {link.label?.trim()}
                 </span>
               </div>
             </a>
