@@ -5,7 +5,7 @@ import Link from "next/link";
 import { LayoutTemplate, Code, ExternalLink, Loader2, Globe, Calendar, Server, ShieldCheck, CheckCircle2, Lock, Link as LinkIcon, RefreshCw, Copy, Download, Settings } from "lucide-react";
 import merge from "lodash/merge";
 import WebsiteOne from "@/components/templates/WebsiteOne";
-import { deployWebsiteAction, connectCustomDomainAction, checkDomainStatusAction } from "@/actions/tenant";
+import { deployWebsiteAction, connectCustomDomainAction, checkDomainStatusAction, publishWebsiteUpdatesAction } from "@/actions/tenant";
 
 interface DashboardProps {
   name: string;
@@ -26,7 +26,7 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
   const [isDeployed, setIsDeployed] = useState(dbData?.isDeployed || false);
   const [isDeploying, setIsDeploying] = useState(false);
   const [deployStep, setDeployStep] = useState(0);
-
+  const [isPublishing, setIsPublishing] = useState(false);
   const [showDnsModal, setShowDnsModal] = useState(false);
   const [customDomainInput, setCustomDomainInput] = useState("");
   const [dnsRecords, setDnsRecords] = useState<any>(null);
@@ -66,7 +66,17 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
     : `https://${name}.nexpetcare.online`;
 
   const activeData = merge({}, dbData?.websiteOneData || {});
+  const handlePublish = async () => {
+    setIsPublishing(true);
+    const res = await publishWebsiteUpdatesAction(name);
 
+    if (res.success) {
+      alert("✅ Success! Your live website has been updated worldwide.");
+    } else {
+      alert("❌ Failed to publish: " + res.error);
+    }
+    setIsPublishing(false);
+  };
   const handleDeploy = async () => {
     setIsDeploying(true);
     setDeployStep(0);
@@ -253,6 +263,16 @@ export default function ClientDashboard({ name, dbData }: DashboardProps) {
           <Link className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors shadow-sm" href={`/dashboard/${name}/settings`}>
             <Settings size={16} /> Settings
           </Link>
+          {isDeployed && (
+            <button 
+              onClick={handlePublish}
+              disabled={isPublishing}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-bold bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-md disabled:opacity-70"
+            >
+              {isPublishing ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
+              {isPublishing ? "Publishing..." : "Publish Updates"}
+            </button>
+          )}
           {paid ? (
             <button onClick={handleDownload} disabled={downloading} className="flex items-center gap-2 px-5 py-2 text-sm font-semibold bg-black text-white rounded-lg hover:bg-gray-800 transition-colors shadow-md disabled:opacity-70">
               {downloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}

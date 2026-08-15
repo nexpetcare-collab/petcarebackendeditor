@@ -106,7 +106,6 @@ export async function deployWebsiteAction(slug: string) {
       lastDeployed: new Date().toISOString()
     });
 
-    // 🚀 Instantly clear the cache for this specific tenant so the 404 goes away!
     // @ts-ignore - Bypasses Next.js 15 TS bug requiring 2 arguments
     revalidateTag(`website-${slug}`);
     // @ts-ignore
@@ -130,7 +129,6 @@ export async function saveWebsiteSettingsAction(slug: string, settings: any) {
       lastUpdated: new Date().toISOString()
     });
 
-    // 🚀 Instantly clear the cache when SEO/settings are updated
     // @ts-ignore - Bypasses Next.js 15 TS bug requiring 2 arguments
     revalidateTag(`website-${slug}`);
     // @ts-ignore
@@ -146,9 +144,6 @@ export async function saveWebsiteSettingsAction(slug: string, settings: any) {
   }
 }
 
-
-// Add this to actions/tenant.ts
-
 export async function saveWebsiteContentAction(slug: string, websiteOneData: any) {
   try {
     const websiteRef = doc(db, "websites", slug);
@@ -157,18 +152,42 @@ export async function saveWebsiteContentAction(slug: string, websiteOneData: any
       lastUpdated: new Date().toISOString()
     });
 
-    // 🚀 1. Destroy the Infinite Data Cache
     // @ts-ignore
     revalidateTag(`website-${slug}`);
+    // @ts-ignore
+    revalidateTag("website");
 
-    // 🚀 2. Command Vercel to destroy the cached Subdomain HTML page
+    // 🚀 Command Vercel to destroy the cached Subdomain HTML page
     revalidatePath(`/${slug}`, 'page');
-    
-    // 🚀 3. Command Vercel to destroy the cached Custom Domain HTML page (if they have one)
+    // 🚀 Command Vercel to destroy the cached Custom Domain HTML page
     revalidatePath(`/live/domain/[domain]`, 'page');
 
     return { success: true };
   } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function publishWebsiteUpdatesAction(slug: string) {
+  try {
+    // 1. Force clear the unstable_cache (Firebase Data)
+    // @ts-ignore
+    revalidateTag(`website-${slug}`);
+    // @ts-ignore
+    revalidateTag("website");
+    
+    // 2. Force clear the Next.js static HTML for the live wildcard domain
+    revalidatePath(`/${slug}`, 'page');
+    revalidatePath(`/${slug}`, 'layout');
+    
+    // 3. Force clear the Dashboard/Editor so the client sees the fresh version
+    revalidatePath(`/dashboard/${slug}`);
+    revalidatePath(`/dashboard/${slug}/edit`);
+    revalidatePath(`/dashboard/${slug}/settings`);
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Publish Error:", error);
     return { success: false, error: error.message };
   }
 }
